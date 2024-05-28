@@ -1,10 +1,9 @@
 package com.adepuu.freshGoodiesBackend.products.service.impl;
 
+import com.adepuu.freshGoodiesBackend.exceptions.ApplicationException;
 import com.adepuu.freshGoodiesBackend.products.model.Product;
 import com.adepuu.freshGoodiesBackend.products.service.ProductService;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
-import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +27,7 @@ public class ProductServiceImpl implements ProductService {
     public Product addProduct(Product product) {
         boolean exists = products.stream().anyMatch(p -> p.getId() == product.getId());
         if (exists) {
-            throw new IllegalArgumentException("Product with ID " + product.getId() + " already exists.");
+            throw new ApplicationException("Product with ID " + product.getId() + " already exists.");
         }
         products.add(product);
         return product;
