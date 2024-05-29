@@ -19,7 +19,6 @@ import static java.util.stream.Collectors.toList;
 
 @RestController
 @RequestMapping("/api/v1/products")
-@Log
 public class ProductController {
     private final ProductService productService;
 
