@@ -26,14 +26,9 @@ public class ProductController {
         this.productService = productService;
     }
 
-    private Validator getValidator(){
-        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-        return factory.getValidator();
-    }
-
     @GetMapping
     public ResponseEntity<Response<List<Product>>> getProducts() {
-        return Response.successfulResponse("All product fetched", productService.getProducts());
+        return Response.successfulResponse("All products fetched", productService.getProducts());
     }
 
     @GetMapping("/{id}")
@@ -51,7 +46,7 @@ public class ProductController {
     }
 
     @PostMapping
-    public ResponseEntity<Response<Product>> createProduct(@Valid @RequestBody Product product) {
+    public ResponseEntity<Response<Product>> createProduct(@Validated @RequestBody Product product) {
         var createdProduct = productService.addProduct(product);
         return Response.successfulResponse(HttpStatus.CREATED.value(), "New product created", productService.updateProduct(createdProduct));
     }

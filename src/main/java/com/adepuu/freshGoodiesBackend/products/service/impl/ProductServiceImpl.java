@@ -5,12 +5,13 @@ import com.adepuu.freshGoodiesBackend.products.model.Product;
 import com.adepuu.freshGoodiesBackend.products.service.ProductService;
 import lombok.extern.java.Log;
 import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@Repository
+@Service
 @Log
 public class ProductServiceImpl implements ProductService {
     List<Product> products = new ArrayList<>();
