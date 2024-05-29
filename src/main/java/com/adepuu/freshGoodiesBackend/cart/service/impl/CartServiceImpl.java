@@ -5,6 +5,7 @@ import com.adepuu.freshGoodiesBackend.cart.entity.CartItem;
 import com.adepuu.freshGoodiesBackend.cart.repository.CartRepository;
 import com.adepuu.freshGoodiesBackend.cart.service.CartService;
 import com.adepuu.freshGoodiesBackend.exceptions.DataNotFoundException;
+import com.adepuu.freshGoodiesBackend.products.service.ProductService;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -14,16 +15,20 @@ import java.util.Optional;
 
 @Service
 public class CartServiceImpl implements CartService {
-
+  private final ProductService productService;
   private final CartRepository cartRepository;
 
-  public CartServiceImpl(CartRepository cartRepository) {
+  public CartServiceImpl(CartRepository cartRepository, ProductService productService) {
+    this.productService = productService;
     this.cartRepository = cartRepository;
   }
 
   @Override
   @Transactional
   public CartItem addCartItem(Long cartId, Long productId, int quantity) {
+    // This method will automatically throw a runtime exception if product not found
+    productService.getProduct(productId);
+
     Cart cart = cartRepository.findActiveCartById(cartId);
     if (cart == null) {
       throw new DataNotFoundException("Cart not found or has been deleted");
