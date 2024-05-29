@@ -1,6 +1,6 @@
 package com.adepuu.freshGoodiesBackend.products.service;
 
-import com.adepuu.freshGoodiesBackend.products.model.Product;
+import com.adepuu.freshGoodiesBackend.products.entity.Product;
 
 import java.util.List;
 import java.util.Optional;
