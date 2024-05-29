@@ -1,6 +1,7 @@
 package com.adepuu.freshGoodiesBackend.products.service.impl;
 
 import com.adepuu.freshGoodiesBackend.exceptions.ApplicationException;
+import com.adepuu.freshGoodiesBackend.exceptions.DataNotFoundException;
 import com.adepuu.freshGoodiesBackend.products.entity.Product;
 import com.adepuu.freshGoodiesBackend.products.repository.ProductRepository;
 import com.adepuu.freshGoodiesBackend.products.service.ProductService;
@@ -29,13 +30,16 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Optional<Product> getProduct(long id) {
-        return productRepository.findById(id);
+        Optional<Product> product = productRepository.findById(id);
+        if (product.isEmpty()) {
+            throw new DataNotFoundException("Product with ID " + id + " not found.");
+        }
+        return product;
     }
-
     @Override
     public Product addProduct(Product product) {
         if (productRepository.existsById(product.getId())) {
-            throw new ApplicationException("Product with ID " + product.getId() + " already exists.");
+            throw new DataNotFoundException("Product with ID " + product.getId() + " already exists.");
         }
         return productRepository.save(product);
     }
@@ -43,7 +47,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public Product updateProduct(Product product) {
         if (!productRepository.existsById(product.getId())) {
-            throw new ApplicationException("Product with ID " + product.getId() + " does not exist.");
+            throw new DataNotFoundException("Product with ID " + product.getId() + " does not exist.");
         }
         return productRepository.save(product);
     }
@@ -52,7 +56,7 @@ public class ProductServiceImpl implements ProductService {
     @Transactional
     public void deleteProduct(Long id) {
         if (!productRepository.existsById(id)) {
-            throw new ApplicationException("Product with ID " + id + " does not exist.");
+            throw new DataNotFoundException("Product with ID " + id + " does not exist.");
         }
         productRepository.softDeleteById(id);
         productRepository.softDeleteMetadataByProductId(id);

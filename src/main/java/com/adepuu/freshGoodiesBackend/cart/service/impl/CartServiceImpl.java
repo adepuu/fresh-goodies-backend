@@ -4,11 +4,11 @@ import com.adepuu.freshGoodiesBackend.cart.entity.Cart;
 import com.adepuu.freshGoodiesBackend.cart.entity.CartItem;
 import com.adepuu.freshGoodiesBackend.cart.repository.CartRepository;
 import com.adepuu.freshGoodiesBackend.cart.service.CartService;
+import com.adepuu.freshGoodiesBackend.exceptions.DataNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,7 +26,7 @@ public class CartServiceImpl implements CartService {
   public CartItem addCartItem(Long cartId, Long productId, int quantity) {
     Cart cart = cartRepository.findActiveCartById(cartId);
     if (cart == null) {
-      throw new IllegalArgumentException("Cart not found or has been deleted");
+      throw new DataNotFoundException("Cart not found or has been deleted");
     }
 
     if (cart.getItems() == null) {
@@ -41,7 +41,7 @@ public class CartServiceImpl implements CartService {
     }
 
     if (quantity <= 0) {
-      throw new IllegalArgumentException("Quantity must be greater than zero for new items");
+      throw new DataNotFoundException("Quantity must be greater than zero for new items");
     }
 
     CartItem cartItem = new CartItem();
@@ -57,7 +57,7 @@ public class CartServiceImpl implements CartService {
   public List<CartItem> getAllCartItems(Long cartId) {
     Cart cart = cartRepository.findActiveCartById(cartId);
     if (cart == null) {
-      throw new IllegalArgumentException("Cart not found or has been deleted");
+      throw new DataNotFoundException("Cart not found or has been deleted");
     }
     return cart.getItems();
   }
@@ -67,7 +67,7 @@ public class CartServiceImpl implements CartService {
   public CartItem updateCartItem(Long cartId, Long itemId, int quantityChange) {
     Cart cart = cartRepository.findActiveCartById(cartId);
     if (cart == null) {
-      throw new IllegalArgumentException("Cart not found or has been deleted");
+      throw new DataNotFoundException("Cart not found or has been deleted");
     }
 
     Optional<CartItem> cartItemOpt = cart.getItems().stream()
@@ -75,7 +75,7 @@ public class CartServiceImpl implements CartService {
             .findFirst();
 
     if (cartItemOpt.isEmpty()) {
-      throw new IllegalArgumentException("CartItem not found");
+      throw new DataNotFoundException("CartItem not found");
     }
 
     CartItem cartItem = cartItemOpt.get();
@@ -95,7 +95,7 @@ public class CartServiceImpl implements CartService {
   public void deleteCartItem(Long cartId, Long itemId) {
     Cart cart = cartRepository.findActiveCartById(cartId);
     if (cart == null) {
-      throw new IllegalArgumentException("Cart not found or has been deleted");
+      throw new DataNotFoundException("Cart not found or has been deleted");
     }
     cart.getItems().removeIf(item -> item.getId() == itemId);
 
@@ -108,7 +108,11 @@ public class CartServiceImpl implements CartService {
 
   @Override
   public Cart getCartById(Long cartId) {
-    return cartRepository.findActiveCartById(cartId);
+    Cart cart = cartRepository.findActiveCartById(cartId);
+    if (cart == null) {
+      throw new DataNotFoundException("Cart not found or has been deleted");
+    }
+    return cart;
   }
 
   @Override
@@ -124,7 +128,7 @@ public class CartServiceImpl implements CartService {
   public void deleteCart(Long cartId) {
     Cart cart = cartRepository.findActiveCartById(cartId);
     if (cart == null) {
-      throw new IllegalArgumentException("Cart not found or has been deleted");
+      throw new DataNotFoundException("Cart not found or has been deleted");
     }
     cartRepository.deleteById(cartId);
   }

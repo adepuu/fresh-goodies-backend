@@ -1,6 +1,7 @@
 package com.adepuu.freshGoodiesBackend.exceptions;
 
 import com.adepuu.freshGoodiesBackend.responses.Response;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
@@ -17,6 +18,11 @@ import java.util.stream.Collectors;
 @ControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {
+
+	@ExceptionHandler(DataNotFoundException.class)
+	public final ResponseEntity<Response<String>> handleProductNotFoundException(DataNotFoundException ex){
+		return Response.failedResponse(HttpStatus.NOT_FOUND.value(), ex.getMessage());
+	}
 	@ExceptionHandler(ApplicationException.class)
 	public final ResponseEntity<Response<String>> handleProductNotFoundException(ApplicationException ex){
 		return Response.failedResponse(HttpStatus.BAD_REQUEST.value(), "Unable to process the request", ex.getMessage());
