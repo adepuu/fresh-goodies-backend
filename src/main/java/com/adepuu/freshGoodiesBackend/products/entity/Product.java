@@ -5,6 +5,10 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import org.hibernate.annotations.SQLRestriction;
+import org.hibernate.annotations.Where;
+
+import java.util.Date;
 
 @Entity
 @Data
@@ -12,7 +16,9 @@ import lombok.*;
 @AllArgsConstructor
 @Setter
 @Getter
-public class ProductEntity {
+@Table(name = "product")
+@SQLRestriction("deleted_at IS NULL")
+public class Product {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private long id;
@@ -36,5 +42,28 @@ public class ProductEntity {
   @NotNull(message = "Metadata is required")
   @OneToOne(cascade = CascadeType.ALL)
   @JoinColumn(name = "metadata_id", referencedColumnName = "id")
-  private MetadataEntity metadata;
+  private Metadata metadata;
+
+  @Temporal(TemporalType.TIMESTAMP)
+  @Column(name = "created_at", nullable = false, updatable = false)
+  private Date createdAt;
+
+  @Temporal(TemporalType.TIMESTAMP)
+  @Column(name = "updated_at", nullable = false)
+  private Date updatedAt;
+
+  @Temporal(TemporalType.TIMESTAMP)
+  @Column(name = "deleted_at")
+  private Date deletedAt;
+
+  @PrePersist
+  protected void onCreate() {
+    createdAt = new Date();
+    updatedAt = new Date();
+  }
+
+  @PreUpdate
+  protected void onUpdate() {
+    updatedAt = new Date();
+  }
 }

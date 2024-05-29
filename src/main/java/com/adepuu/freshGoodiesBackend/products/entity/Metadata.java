@@ -1,12 +1,12 @@
 package com.adepuu.freshGoodiesBackend.products.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
+import org.hibernate.annotations.SQLRestriction;
+
+import java.util.Date;
 
 @Entity
 @Data
@@ -14,7 +14,9 @@ import lombok.*;
 @AllArgsConstructor
 @Setter
 @Getter
-public class MetadataEntity {
+@Table(name = "metadata")
+@SQLRestriction("deleted_at IS NULL")
+public class Metadata {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private long id;
@@ -39,4 +41,27 @@ public class MetadataEntity {
 
   @Min(value = 0, message = "Carbs must be non-negative")
   private int carbs;
+
+  @Temporal(TemporalType.TIMESTAMP)
+  @Column(name = "created_at", nullable = false, updatable = false)
+  private Date createdAt;
+
+  @Temporal(TemporalType.TIMESTAMP)
+  @Column(name = "updated_at", nullable = false)
+  private Date updatedAt;
+
+  @Temporal(TemporalType.TIMESTAMP)
+  @Column(name = "deleted_at")
+  private Date deletedAt;
+
+  @PrePersist
+  protected void onCreate() {
+    createdAt = new Date();
+    updatedAt = new Date();
+  }
+
+  @PreUpdate
+  protected void onUpdate() {
+    updatedAt = new Date();
+  }
 }

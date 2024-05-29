@@ -1,9 +1,10 @@
 package com.adepuu.freshGoodiesBackend.products.service.impl;
 
 import com.adepuu.freshGoodiesBackend.exceptions.ApplicationException;
-import com.adepuu.freshGoodiesBackend.products.model.Product;
+import com.adepuu.freshGoodiesBackend.products.entity.Product;
 import com.adepuu.freshGoodiesBackend.products.repository.ProductRepository;
 import com.adepuu.freshGoodiesBackend.products.service.ProductService;
+import jakarta.transaction.Transactional;
 import lombok.extern.java.Log;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
@@ -48,10 +49,12 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Transactional
     public void deleteProduct(Long id) {
         if (!productRepository.existsById(id)) {
             throw new ApplicationException("Product with ID " + id + " does not exist.");
         }
-        productRepository.deleteById(id);
+        productRepository.softDeleteById(id);
+        productRepository.softDeleteMetadataByProductId(id);
     }
 }
