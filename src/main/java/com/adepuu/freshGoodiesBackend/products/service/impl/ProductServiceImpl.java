@@ -2,6 +2,7 @@ package com.adepuu.freshGoodiesBackend.products.service.impl;
 
 import com.adepuu.freshGoodiesBackend.exceptions.ApplicationException;
 import com.adepuu.freshGoodiesBackend.products.model.Product;
+import com.adepuu.freshGoodiesBackend.products.repository.ProductRepository;
 import com.adepuu.freshGoodiesBackend.products.service.ProductService;
 import lombok.extern.java.Log;
 import org.springframework.stereotype.Repository;
@@ -14,49 +15,43 @@ import java.util.Optional;
 @Service
 @Log
 public class ProductServiceImpl implements ProductService {
-    List<Product> products = new ArrayList<>();
+    private final ProductRepository productRepository;
+
+    public ProductServiceImpl(ProductRepository productRepository) {
+        this.productRepository = productRepository;
+    }
 
     @Override
     public List<Product> getProducts() {
-        return products;
+        return productRepository.findAll();
     }
 
     @Override
     public Optional<Product> getProduct(long id) {
-        return products.stream().filter(product -> product.getId() == id).findFirst();
+        return productRepository.findById(id);
     }
 
     @Override
     public Product addProduct(Product product) {
-        boolean exists = products.stream().anyMatch(p -> p.getId() == product.getId());
-        if (exists) {
+        if (productRepository.existsById(product.getId())) {
             throw new ApplicationException("Product with ID " + product.getId() + " already exists.");
         }
-        products.add(product);
-        return product;
+        return productRepository.save(product);
     }
 
     @Override
     public Product updateProduct(Product product) {
-        Product currentProduct = products.stream()
-                .filter(p -> p.getId() == product.getId())
-                .findFirst()
-                .orElse(null);
-
-        if (currentProduct != null) {
-            currentProduct.setName(product.getName());
-            currentProduct.setCategory(product.getCategory());
-            currentProduct.setImageUrl(product.getImageUrl());
-            currentProduct.setPrice(product.getPrice());
-            currentProduct.setWeight(product.getWeight());
-            currentProduct.setMetadata(product.getMetadata());
+        if (!productRepository.existsById(product.getId())) {
+            throw new ApplicationException("Product with ID " + product.getId() + " does not exist.");
         }
-
-        return currentProduct;
+        return productRepository.save(product);
     }
 
     @Override
     public void deleteProduct(Long id) {
-
+        if (!productRepository.existsById(id)) {
+            throw new ApplicationException("Product with ID " + id + " does not exist.");
+        }
+        productRepository.deleteById(id);
     }
 }
