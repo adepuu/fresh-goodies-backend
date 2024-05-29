@@ -3,6 +3,7 @@ package com.adepuu.freshGoodiesBackend.products.service.impl;
 import com.adepuu.freshGoodiesBackend.exceptions.ApplicationException;
 import com.adepuu.freshGoodiesBackend.products.model.Product;
 import com.adepuu.freshGoodiesBackend.products.service.ProductService;
+import lombok.extern.java.Log;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -10,6 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
+@Log
 public class ProductServiceImpl implements ProductService {
     List<Product> products = new ArrayList<>();
 

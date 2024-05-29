@@ -3,13 +3,18 @@ package com.adepuu.freshGoodiesBackend.products;
 import com.adepuu.freshGoodiesBackend.products.model.Product;
 import com.adepuu.freshGoodiesBackend.products.service.ProductService;
 import com.adepuu.freshGoodiesBackend.responses.Response;
+import jakarta.validation.*;
 import lombok.extern.java.Log;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+
+import static java.util.stream.Collectors.toList;
 
 @RestController
 @RequestMapping("/api/v1/products")
@@ -19,6 +24,11 @@ public class ProductController {
 
     public ProductController(ProductService productService) {
         this.productService = productService;
+    }
+
+    private Validator getValidator(){
+        ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+        return factory.getValidator();
     }
 
     @GetMapping
@@ -41,7 +51,7 @@ public class ProductController {
     }
 
     @PostMapping
-    public ResponseEntity<Response<Product>> createProduct(@RequestBody final Product product) {
+    public ResponseEntity<Response<Product>> createProduct(@Valid @RequestBody Product product) {
         var createdProduct = productService.addProduct(product);
         return Response.successfulResponse(HttpStatus.CREATED.value(), "New product created", productService.updateProduct(createdProduct));
     }
